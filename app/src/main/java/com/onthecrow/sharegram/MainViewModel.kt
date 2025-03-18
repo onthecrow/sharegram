@@ -24,19 +24,19 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val match = reelRegex.find(instagramPostUrl)?.let { it to true }
-                ?: postRegex.find(instagramPostUrl)?.let { it to false }
+            val match = reelRegex.find(instagramPostUrl) ?: postRegex.find(instagramPostUrl)
             if (match != null) {
-                val postResult = instagramRepository.getPost(match.first.groupValues[1])
+                val postResult = instagramRepository.getPost(match.groupValues[1])
+                val isVideo = postResult.getOrNull()?.data?.xdtShortcodeMedia?.videoUrl != null
                 if (postResult.isSuccess && postResult.getOrNull() != null) {
-                    val downloadUrl = if (match.second) {
+                    val downloadUrl = if (isVideo) {
                         postResult.getOrThrow().data.xdtShortcodeMedia.videoUrl
                     } else {
                         postResult.getOrThrow().data.xdtShortcodeMedia.displayUrl
                     }
 
                     val downloadResult =
-                        instagramRepository.downloadPost(downloadUrl ?: return@launch, match.second)
+                        instagramRepository.downloadPost(downloadUrl ?: return@launch, isVideo)
                     if (downloadResult.isSuccess && downloadResult.getOrNull() != null) {
                         _fileToShare.send(downloadResult.getOrThrow())
                     }
