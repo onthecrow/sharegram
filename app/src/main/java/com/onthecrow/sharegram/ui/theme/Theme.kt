@@ -47,8 +47,8 @@ fun SharegramTheme(
             if (darkTheme) dynamicDarkColorScheme(context).copy(background = Color.Transparent) else dynamicLightColorScheme(context).copy(background = Color.Transparent)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> DarkColorScheme.copy(background = Color.Transparent)
+        else -> LightColorScheme.copy(background = Color.Transparent)
     }
 
     MaterialTheme(
